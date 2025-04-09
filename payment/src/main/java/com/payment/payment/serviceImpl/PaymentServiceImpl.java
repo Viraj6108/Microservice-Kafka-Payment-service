@@ -83,23 +83,24 @@ public class PaymentServiceImpl implements PaymentService {
     @Transactional
     @Override
     public void RefundPayment(String paymentJson) throws PaymentException {
-        Orders order = gson.fromJson(paymentJson,Orders.class);
-        System.out.println("🔍 Extracted Order ID: " + order.getOrderId());
-        Payment payment = paymentRepository.findByOrderId(order.getOrderId());
-        if (payment == null) {
-            throw new PaymentException("No payment record found for Order ID: " + order.getOrderId());
-        }
 
-        System.out.println("✅ Found payment record: " + payment);
-        System.out.println("🔍 Current Payment Status: " + payment.getStatus());
-        if(payment.getStatus().equals(Payment.STATUS.FAILED))
-        {
-            throw new PaymentException("Due to failure in payment order is not confirmed");
-        }
-        payment.setStatus(Payment.STATUS.REFUND);
-       Payment updatedPayment = paymentRepository.save(payment);
-        System.out.println("✅ Updated Payment: " + updatedPayment);
-        String paymentJson1 = gson.toJson(payment);
-        kafkaTemplate.send("payment-refund",paymentJson1);
+            Orders order = gson.fromJson(paymentJson, Orders.class);
+            System.out.println("🔍 Extracted Order ID: " + order.getOrderId());
+                Payment payment = paymentRepository.findByOrderId(order.getOrderId());
+                if (payment == null) {
+                    throw new PaymentException("No payment record found for Order ID: " + order.getOrderId());
+                }
+                System.out.println("✅ Found payment record: " + payment);
+                System.out.println("🔍 Current Payment Status: " + payment.getStatus());
+                if (payment.getStatus().equals(Payment.STATUS.FAILED)) {
+                    throw new PaymentException("Due to failure in payment order is not confirmed");
+                }
+                payment.setStatus(Payment.STATUS.REFUND);
+                paymentRepository.save(payment);
+                System.out.println("✅ Updated Payment: " + payment);
+                String paymentJson1 = gson.toJson(payment);
+                kafkaTemplate.send("payment-refund", paymentJson1);
+
+
     }
 }
