@@ -6,4 +6,5 @@ import com.payment.payment.exception.PaymentException;
 public interface PaymentService {
     public void pendingPayment(String order) throws PaymentException;
     public Payment proceedPayment(Payment payment) throws PaymentException;
+    public void RefundPayment(String paymentJson) throws PaymentException;
 }

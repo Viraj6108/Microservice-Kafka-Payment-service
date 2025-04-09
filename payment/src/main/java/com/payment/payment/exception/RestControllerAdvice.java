@@ -9,7 +9,7 @@ public class RestControllerAdvice {
 
     @ExceptionHandler(PaymentException.class)
     public ResponseEntity<String> handleResourceNotFoundException(PaymentException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     // Handle generic exceptions

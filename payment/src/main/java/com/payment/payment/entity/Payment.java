@@ -11,7 +11,7 @@ public class Payment {
     private Integer paymentId;
 
     public  enum STATUS{
-        SUCCESS, FAILED, PENDING
+        SUCCESS, FAILED, PENDING,REFUND
     }
     @Enumerated(EnumType.STRING)
     private STATUS status;
@@ -45,6 +45,7 @@ public class Payment {
 
     public void setStatus(STATUS status) {
         this.status = status;
+
     }
     public PaymentMode getPaymentMode( ){
         return paymentMode;

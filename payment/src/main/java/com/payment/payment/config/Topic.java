@@ -13,4 +13,10 @@ public class Topic {
     {
         return TopicBuilder.name("payment-event").build();
     }
+
+    @Bean
+    public NewTopic paymetRefund()
+    {
+        return TopicBuilder.name("payment-refund").build();
+    }
 }
