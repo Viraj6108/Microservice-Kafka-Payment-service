@@ -124,7 +124,8 @@ public class PaymentServiceImpl implements PaymentService {
         String key = "payment";
        /* ProducerRecord<String,String> record = new ProducerRecord<>("payment-order",key,paymentJson);*/
         /*producer.send(record);*/
-        kafkaTemplate.send("payment-order",key,paymentJson);
+        int partition = 0;
+        kafkaTemplate.send("order-detail",partition,key,paymentJson);
         System.out.println(key +" " + paymentJson);
     }
 }
