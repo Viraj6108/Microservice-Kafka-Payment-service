@@ -7,11 +7,16 @@ import com.payment.payment.exception.PaymentException;
 import com.payment.payment.repository.PaymentRepository;
 import com.payment.payment.service.PaymentService;
 import jakarta.transaction.Transactional;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Properties;
 import java.util.Random;
 
 @Service
@@ -102,5 +107,24 @@ public class PaymentServiceImpl implements PaymentService {
                 kafkaTemplate.send("payment-refund", paymentJson1);
 
 
+    }
+    @KafkaListener(topics = "payment-detail" , groupId = "payment-group")
+    public void getPaymentDetails(String orderId) throws PaymentException {
+        Integer payment = gson.fromJson(orderId,Integer.class);
+        Payment paymentDetails  = paymentRepository.findByOrderId(payment);
+        if(paymentDetails.equals(null))
+            throw new PaymentException("Payment not found or rolled back due to technical error");
+        //This is to get more control over the kafka producer not to depend on spring kafka
+        /*Properties properties = new Properties();
+        properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,"localhost:9092");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG,StringSerializer.class.getName());
+        KafkaProducer<String, String> producer = new KafkaProducer<>(properties);*/
+        String paymentJson = gson.toJson(paymentDetails);
+        String key = "payment";
+       /* ProducerRecord<String,String> record = new ProducerRecord<>("payment-order",key,paymentJson);*/
+        /*producer.send(record);*/
+        kafkaTemplate.send("payment-order",key,paymentJson);
+        System.out.println(key +" " + paymentJson);
     }
 }

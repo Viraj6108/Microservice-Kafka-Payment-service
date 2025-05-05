@@ -19,4 +19,7 @@ public class Topic {
     {
         return TopicBuilder.name("payment-refund").build();
     }
+
+    @Bean
+    public NewTopic paymentorder(){return TopicBuilder.name("payment-order").build();}
 }
